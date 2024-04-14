@@ -1,29 +1,33 @@
-horasTotais = [];
+let horasTotais = [];
 
-function getTempoEstudoPorDia(dia){
-    inicio = document.getElementById(`${dia}-inicio`).value;
-    fim = document.getElementById(`${dia}-fim`).value;
+const weekday = ["domingo", "segunda","terca","quarta","quinta","sexta","sabado"];
+const d = new Date();
+let hoje = weekday[d.getDay()];
+
+function getHorasEstudosPorDia(dia){
+    let horaInicioValue = document.getElementById(`${dia}-inicio`).value;
+    let horaFimValue = document.getElementById(`${dia}-fim`).value;
     
-    var horaInicial = new Date(`2024-04-12T${inicio}:00`);
-    var horaFinal = new Date(`2024-04-12T${fim}:00`);
+    var horaInicialDate = new Date(`2024-04-12T${horaInicioValue}:00`);
+    var horaFinalDate = new Date(`2024-04-12T${horaFimValue}:00`);
 
-    var diferencaEmMilissegundos = horaFinal - horaInicial;
+    var diferencaEmMilissegundos = horaFinalDate - horaInicialDate;
     var tempoEmHoras = diferencaEmMilissegundos / (1000 * 60 * 60)
 
-    adicionarTempoAoTotal(dia, tempoEmHoras);
-    showHorasSemanais()
+    addHorasDiariasToTotalArray(dia, tempoEmHoras);
 
     return convertHorasParaHorasEMinutos(tempoEmHoras);
-}
+}//possui testes
 
-function adicionarTempoAoTotal(dia, tempoEmHoras){
+
+function addHorasDiariasToTotalArray(dia, tempoEmHoras){
     let index = horasTotais.findIndex(item => item.dia === dia);
     if (index !== -1) {
         horasTotais[index].tempo = tempoEmHoras;
     } else {
         horasTotais.push({ dia: dia, tempo: tempoEmHoras });
     }
-}
+}//não precisa de testes
 
 function convertHorasParaHorasEMinutos(horas) {
     var horasInteiras = Math.floor(horas);
@@ -38,47 +42,42 @@ function convertHorasParaHorasEMinutos(horas) {
     } else {
         return `${horasInteiras} ${horasTexto} e ${minutos} ${minutosTexto}`;
     }
-}
+}//possui testes
 
-function getHorasTotais(){
-    var total = 0;
+function getHorasEstudosTotais(){
+    var result = 0;
 
     horasTotais.forEach(e => {
-        total += e.tempo;
+        result += e.tempo;
     });
+    
+    return result;
+}// não precisa de testes
 
-    return total;
-}
-
-function showHorasEstudadas(dia){
+function DOM_showHorasEstudadas(dia){
     if(document.getElementById(`${dia}-habilitado`).checked){
-        document.getElementById(`${dia}-horas-estudadas`).innerText = getTempoEstudoPorDia(dia);
+        document.getElementById(`${dia}-horas-estudadas`).innerText = getHorasEstudosPorDia(dia);
     }
-}
+}// não precisa testar por ser DOM
 
-function showHorasSemanais(){
-    document.getElementById(`horasPorSemana`).innerText = `Horas semanais de estudos: ${convertHorasParaHorasEMinutos(getHorasTotais())}`;
-}
+function DOM_exibicaoDeHorasIniciais() {
+    DOM_showHorasEstudadas("segunda")
+    DOM_showHorasEstudadas("terca")
+    DOM_showHorasEstudadas("quarta")
+    DOM_showHorasEstudadas("quinta")
+    DOM_showHorasEstudadas("sexta")
+    DOM_showHorasEstudadas("sabado")
+    DOM_showHorasEstudadas("domingo")
+    
+    document.getElementById(`horasPorSemana`).innerText = `Horas semanais de estudos: ${convertHorasParaHorasEMinutos(getHorasEstudosTotais())}`;
+}// não precisa testar por ser DOM
 
-showHorasEstudadas("segunda")
-showHorasEstudadas("terca")
-showHorasEstudadas("quarta")
-showHorasEstudadas("quinta")
-showHorasEstudadas("sexta")
-showHorasEstudadas("sabado")
-showHorasEstudadas("domingo")
-showHorasSemanais()
+DOM_exibicaoDeHorasIniciais()
 
+let horasAEstudarHoje = horasTotais.find(arr => arr.dia === hoje);
+horasAEstudarHoje = (horasAEstudarHoje == undefined) ? 0 : horasAEstudarHoje.tempo;
 
-const weekday = ["domingo", "segunda","terca","quarta","quinta","sexta","sabado"];
-const d = new Date();
-let day = weekday[d.getDay()];
-
-horasHoje = horasTotais.find(item => item.dia === day).tempo;
-
-//////////////////////////////////////////
-
-
+/////////////////PARTE DAS MATÉRIAS/////////////////
 
 var listaMaterias = document.getElementById('lista-materias');
 let materias = [
@@ -159,33 +158,35 @@ let materias = [
 ];
 
 function getPrioridadeText(num){
-    $result = "";
+    let result = "";
 
     switch (num) {
         case 1:
-            $result = "baixa";
+            result = "baixa";
             break;
     
         case 2:
-            $result = "normal";
+            result = "normal";
             break;
 
         case 3:
-            $result = "média";
+            result = "média";
             break;
             
         case 4:
-            $result = "alta";
+            result = "alta";
             break;
 
         case 5:
-            $result = "crítica";
+            result = "crítica";
             break;
     }
 
-    return $result;
-}
+    return result;
+}//não precisa testar por ser função de longo prazo
 
+
+//TESTAR E REFATORAR TUDO DAQUI PRA BAIXO
 materias.forEach(materia => {
     let li = document.createElement('li');
     li.textContent = materia.nome;
@@ -208,7 +209,7 @@ materias.forEach(materia => {
     listaMaterias.appendChild(li);
 
 
-assuntosOrdenadosPorPrioridade = [];
+let assuntosOrdenadosPorPrioridade = [];
 materias.forEach(materia =>{
     materia.assuntos.forEach( assunto => {
         if(assunto.totalmente_aprendido == false){
@@ -219,7 +220,7 @@ materias.forEach(materia =>{
 
 assuntosOrdenadosPorPrioridade = assuntosOrdenadosPorPrioridade.sort((a, b) => b.prioridade - a.prioridade);
 
-assuntosPorDiaSemana = {
+let assuntosPorDiaSemana = {
     0: "",
     1: "",
     2: "",
@@ -258,19 +259,19 @@ document.getElementById('sexta_assunto').innerText = `Sexta-feira: ${assuntosPor
 document.getElementById('sabado_assunto').innerText = `Sábado: ${assuntosPorDiaSemana[6]}`;
 document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDiaSemana[0]}`;
 
-    if(horasTotais.findIndex(item => item.dia === day) === -1){
-        totalSegundos = false;
-    }
-    
 
-    let totalSegundos = 60 * 60 * horasHoje; // 1 hora (3600 segundos)
+
+    let totalSegundos = 60 * 60 * horasAEstudarHoje; // 1 hora (3600 segundos)
     let segundosEtapa1 = totalSegundos * (20/100);
     let segundosEtapa2 = totalSegundos * (30/100);
     let segundosEtapa3 = totalSegundos * (30/100);
     let segundosEtapa4 = totalSegundos * (20/100);
     let intervalId;
     
-
+    if(horasTotais.findIndex(item => item.dia === hoje) === -1){
+        totalSegundos = false;
+    }
+    
     // Função para formatar o tempo em HH:MM:SS
     function formatarTempo(segundos) {
         let horas = Math.floor(segundos / 3600);
@@ -340,10 +341,12 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
         }
     });
 
-    document.getElementById('totalHorasHoje').innerText = `Tempo de estudo de hoje: ${convertHorasParaHorasEMinutos(horasHoje)}`;
+    document.getElementById('totalHorasHoje').innerText = `Tempo de estudo de hoje: ${convertHorasParaHorasEMinutos(horasAEstudarHoje)}`;
     document.getElementById("etapa-1").innerText = `Etapa 1 - Revisão do dia anterior: ${formatarTempo(segundosEtapa1)}`
     document.getElementById("etapa-2").innerText = `Etapa 2 - Teoria: ${formatarTempo(segundosEtapa2)}`
     document.getElementById("etapa-3").innerText = `Etapa 3 - Resoluções de questões: ${formatarTempo(segundosEtapa3)}`
     document.getElementById("etapa-4").innerText = `Etapa 4 - Criar flashcards Anki: ${formatarTempo(segundosEtapa4)}`
 
-});
+    });
+
+module.exports = { getHorasEstudosPorDia, convertHorasParaHorasEMinutos };
