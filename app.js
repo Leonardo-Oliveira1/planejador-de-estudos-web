@@ -271,22 +271,31 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
     if(horasTotais.findIndex(item => item.dia === hoje) === -1){
         totalSegundos = false;
     }
-    
+
     // Função para formatar o tempo em HH:MM:SS
     function formatarTempo(segundos) {
         let horas = Math.floor(segundos / 3600);
         let minutos = Math.floor((segundos % 3600) / 60);
         let segundosRestantes = segundos % 60;
+      
+        if(horas == 0){
+            return `${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
+        }
+        
         return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
     }
 
     // Função para atualizar o tempo restante e exibir
     function cronometroEtapa1() {
-        document.getElementById('etapa-1').textContent = `Etapa 1 - Revisão do dia anterior: ${formatarTempo(segundosEtapa1)}`;
+        document.getElementById('etapa-1-counter').textContent = `${formatarTempo(segundosEtapa1)}`;
+        document.title = `Revisão: ${formatarTempo(segundosEtapa1)}`
         if (segundosEtapa1 === 0) {
             clearInterval(intervalId);
-            document.getElementById('etapa-1').textContent = `Etapa 1 - Revisão do dia anterior: Concluída!`;
+            document.getElementById("etapa-1-counter").style.display = "none";
+            document.getElementById("etapa-2-counter").style.display = "block";
 
+            document.getElementById("etapa-1-description").style.display = "none";
+            document.getElementById("etapa-2-description").style.display = "block";
             cronometroEtapa2()
         } else {
             segundosEtapa1--;
@@ -294,10 +303,16 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
     }
 
     function cronometroEtapa2() {
-        document.getElementById('etapa-2').textContent = `Etapa 2 - Teoria: ${formatarTempo(segundosEtapa2)}`;
+        document.getElementById('etapa-2-counter').textContent = `${formatarTempo(segundosEtapa2)}`;
+        document.title = `Teoria: ${formatarTempo(segundosEtapa2)}`
         if (segundosEtapa2 === 0) {
             clearInterval(intervalId);
-            document.getElementById('etapa-2').textContent = `Etapa 2 - Teoria: Concluída!`;
+
+            document.getElementById("etapa-2-counter").style.display = "none";
+            document.getElementById("etapa-3-counter").style.display = "block";
+
+            document.getElementById("etapa-2-description").style.display = "none";
+            document.getElementById("etapa-3-description").style.display = "block";
 
             cronometroEtapa3()
         } else {
@@ -307,10 +322,16 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
     }
 
     function cronometroEtapa3() {
-        document.getElementById('etapa-3').textContent = `Etapa 3 - Resoluções de questões: ${formatarTempo(segundosEtapa3)}`;
+        document.getElementById('etapa-3-counter').textContent = `${formatarTempo(segundosEtapa3)}`;
+        document.title = `Questões: ${formatarTempo(segundosEtapa3)}`
         if (segundosEtapa3 === 0) {
             clearInterval(intervalId);
-            document.getElementById('etapa-3').textContent = `Etapa 3 - Resoluções de questões: Concluída!`;
+
+            document.getElementById("etapa-3-counter").style.display = "none";
+            document.getElementById("etapa-4-counter").style.display = "block";
+
+            document.getElementById("etapa-3-description").style.display = "none";
+            document.getElementById("etapa-4-description").style.display = "block";
 
             cronometroEtapa4()
         } else {
@@ -320,10 +341,12 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
     }
 
     function cronometroEtapa4() {
-        document.getElementById('etapa-4').textContent = `Etapa 4 - Criar flashcards Anki: ${formatarTempo(segundosEtapa4)}`;
+        document.getElementById('etapa-4-counter').textContent = `${formatarTempo(segundosEtapa4)}`;
+        document.title = `Anotações: ${formatarTempo(segundosEtapa4)}`
         if (segundosEtapa4 === 0) {
+            document.getElementById("etapa-4-description").style.display = "none";
+            document.getElementById("etapa-4-counter").innerText = "Estudos finalizados."
             clearInterval(intervalId);
-            document.getElementById('etapa-4').textContent = `Etapa 4 - Criar flashcards Anki: Concluída!`;
         } else {
             intervalId = setInterval(cronometroEtapa3, 1000);
             segundosEtapa4--;
@@ -336,16 +359,24 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
         if (totalSegundos !== false) {
             intervalId = setInterval(cronometroEtapa1, 1000);
             document.getElementById('btn-comecar').disabled = true; // desabilita o botão começar
+            document.getElementById('btn-comecar').innerText = "Pausar"
         } else {
             document.getElementById('tempo-restante').textContent = `Hoje não há estudos!`;
         }
     });
 
-    document.getElementById('totalHorasHoje').innerText = `Tempo de estudo de hoje: ${convertHorasParaHorasEMinutos(horasAEstudarHoje)}`;
-    document.getElementById("etapa-1").innerText = `Etapa 1 - Revisão do dia anterior: ${formatarTempo(segundosEtapa1)}`
-    document.getElementById("etapa-2").innerText = `Etapa 2 - Teoria: ${formatarTempo(segundosEtapa2)}`
-    document.getElementById("etapa-3").innerText = `Etapa 3 - Resoluções de questões: ${formatarTempo(segundosEtapa3)}`
-    document.getElementById("etapa-4").innerText = `Etapa 4 - Criar flashcards Anki: ${formatarTempo(segundosEtapa4)}`
+    document.getElementById('totalHorasHoje').innerText = `Estudo por ${convertHorasParaHorasEMinutos(horasAEstudarHoje)}`;
+    document.title = `Revisão: ${formatarTempo(segundosEtapa1)}`
+    document.getElementById("etapa-1-counter").innerText = `${formatarTempo(segundosEtapa1)}`
+    document.getElementById("etapa-2-counter").innerText = `${formatarTempo(segundosEtapa2)}`
+    document.getElementById("etapa-3-counter").innerText = `${formatarTempo(segundosEtapa3)}`
+    document.getElementById("etapa-4-counter").innerText = `${formatarTempo(segundosEtapa4)}`
+
+    document.getElementById("etapa-1-description").innerText = `Etapa 1 - Revisão do dia anterior`
+    document.getElementById("etapa-2-description").innerText = `Etapa 2 - Teoria`
+    document.getElementById("etapa-3-description").innerText = `Etapa 3 - Resoluções de questões`
+    document.getElementById("etapa-4-description").innerText = `Etapa 4 - Criar flashcards Anki`
+
 
     });
 
