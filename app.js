@@ -1,4 +1,33 @@
-let horasTotais = [];
+let horasDiarias = [
+    {
+        dia: 'segunda',
+        tempo: 0
+    },
+    {
+        dia: 'terca',
+        tempo: 0
+    },
+    {
+        dia: 'quarta',
+        tempo: 0
+    },
+    {
+        dia: 'quinta',
+        tempo: 0
+    },
+    {
+        dia: 'sexta',
+        tempo: 0
+    },
+    {
+        dia: 'sabado',
+        tempo: 0
+    },
+    {
+        dia: 'domingo',
+        tempo: 0
+    },
+];
 
 const weekday = ["domingo", "segunda","terca","quarta","quinta","sexta","sabado"];
 const d = new Date();
@@ -14,18 +43,18 @@ function getHorasEstudosPorDia(dia){
     var diferencaEmMilissegundos = horaFinalDate - horaInicialDate;
     var tempoEmHoras = diferencaEmMilissegundos / (1000 * 60 * 60)
 
-    addHorasDiariasToTotalArray(dia, tempoEmHoras);
+    addHorasDiariasToArray(dia, tempoEmHoras);
 
     return convertHorasParaHorasEMinutos(tempoEmHoras);
 }//possui testes
 
 
-function addHorasDiariasToTotalArray(dia, tempoEmHoras){
-    let index = horasTotais.findIndex(item => item.dia === dia);
+function addHorasDiariasToArray(dia, tempoEmHoras){
+    let index = horasDiarias.findIndex(item => item.dia === dia);
     if (index !== -1) {
-        horasTotais[index].tempo = tempoEmHoras;
+        horasDiarias[index].tempo = tempoEmHoras;
     } else {
-        horasTotais.push({ dia: dia, tempo: tempoEmHoras });
+        horasDiarias.push({ dia: dia, tempo: tempoEmHoras });
     }
 }//não precisa de testes
 
@@ -47,7 +76,7 @@ function convertHorasParaHorasEMinutos(horas) {
 function getHorasEstudosTotais(){
     var result = 0;
 
-    horasTotais.forEach(e => {
+    horasDiarias.forEach(e => {
         result += e.tempo;
     });
     
@@ -74,7 +103,7 @@ function DOM_exibicaoDeHorasIniciais() {
 
 DOM_exibicaoDeHorasIniciais()
 
-let horasAEstudarHoje = horasTotais.find(arr => arr.dia === hoje);
+let horasAEstudarHoje = horasDiarias.find(arr => arr.dia === hoje);
 horasAEstudarHoje = (horasAEstudarHoje == undefined) ? 0 : horasAEstudarHoje.tempo;
 
 /////////////////PARTE DAS MATÉRIAS/////////////////
@@ -109,9 +138,9 @@ let materias = [
         assuntos: [
             {
                 nome: 'Metodologias Ágeis',
-                horas_estimadas: 10,
+                horas_estimadas: 1,
                 prioridade: 3,
-                totalmente_aprendido: false
+                totalmente_aprendido: true
             },
             {
                 nome: 'Engenharia de Requisitos',
@@ -132,7 +161,7 @@ let materias = [
             },
             {
                 nome: 'Garantia de Qualidade',
-                horas_estimadas: 5,
+                horas_estimadas: 3,
                 prioridade: 4,
                 totalmente_aprendido: false
             }
@@ -186,80 +215,107 @@ function getPrioridadeText(num){
 }//não precisa testar por ser função de longo prazo
 
 
-//TESTAR E REFATORAR TUDO DAQUI PRA BAIXO
-materias.forEach(materia => {
-    let li = document.createElement('li');
-    li.textContent = materia.nome;
+function listMateriasEAssuntos(){
+    materias.forEach(materia => {
+        let li = document.createElement('li');
+        li.textContent = materia.nome;
+    
+        if (materia.assuntos && materia.assuntos.length > 0) {
+            let ulAssuntos = document.createElement('ul');
+            materia.assuntos.forEach(function(assunto) {
+                let liAssunto = document.createElement('li');
+                liAssunto.textContent = `${assunto.nome} (${assunto.horas_estimadas} horas) [Prioridade: ${getPrioridadeText(assunto.prioridade)}]`;
+                
+                if(assunto.totalmente_aprendido == true){
+                    liAssunto.style.textDecoration = "line-through";
+                }
+    
+                ulAssuntos.appendChild(liAssunto);
+            });
+            li.appendChild(ulAssuntos);
+        }
+    
+        listaMaterias.appendChild(li);
+    });
+}//testar
 
-    if (materia.assuntos && materia.assuntos.length > 0) {
-        let ulAssuntos = document.createElement('ul');
-        materia.assuntos.forEach(function(assunto) {
-            let liAssunto = document.createElement('li');
-            liAssunto.textContent = `${assunto.nome} (${assunto.horas_estimadas} horas) [Prioridade: ${getPrioridadeText(assunto.prioridade)}]`;
+function ordenarAssuntosPorPrioridade(){
+    let assuntosOrdenadosPorPrioridade = [];
+
+    materias.forEach(materia =>{
+        materia.assuntos.forEach( assunto => {
+            if(assunto.totalmente_aprendido == false){
+                assuntosOrdenadosPorPrioridade.push({"assunto": assunto.nome, "prioridade": assunto.prioridade, "horas": assunto.horas_estimadas})
+            }
+        })
+    })
+    
+    assuntosOrdenadosPorPrioridade = assuntosOrdenadosPorPrioridade.sort((a, b) => b.prioridade - a.prioridade);
+
+    return assuntosOrdenadosPorPrioridade;
+}//testar
+
+function getAssuntosPorDiaSemana(){
+    let diasNecessarios = 0;
+    let assuntoAtualIndex = 0;
+    let assuntosPorDiaSemana = {
+        0: "",
+        1: "",
+        2: "",
+        3: "",
+        4: "",
+        5: "",
+        6: ""
+    };
+
+    let assuntosOrdenadosPorPrioridade = ordenarAssuntosPorPrioridade();
+    horasDiarias.forEach(dia => {
+        if (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas > -1) {
+            assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas -= dia.tempo;
             
-            if(assunto.totalmente_aprendido == true){
-                liAssunto.style.textDecoration = "line-through";
+            if(dia.tempo == 0){
+                diasNecessarios++;
+                assuntosPorDiaSemana[diasNecessarios] = "N/A"
             }
 
-            ulAssuntos.appendChild(liAssunto);
-        });
-        li.appendChild(ulAssuntos);
-    }
-
-    listaMaterias.appendChild(li);
-
-
-let assuntosOrdenadosPorPrioridade = [];
-materias.forEach(materia =>{
-    materia.assuntos.forEach( assunto => {
-        if(assunto.totalmente_aprendido == false){
-            assuntosOrdenadosPorPrioridade.push({"assunto": assunto.nome, "prioridade": assunto.prioridade, "horas": assunto.horas_estimadas})
+            diasNecessarios++;
+            assuntosPorDiaSemana[diasNecessarios] = assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto
         }
-    })
-})
-
-assuntosOrdenadosPorPrioridade = assuntosOrdenadosPorPrioridade.sort((a, b) => b.prioridade - a.prioridade);
-
-let assuntosPorDiaSemana = {
-    0: "",
-    1: "",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-    6: ""
-};
-
-let diasNecessarios = 0;
-let assuntoAtualIndex = 0;
-
-horasTotais.forEach(dia => {
-    if (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas > -1) {
-        assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas -= dia.tempo;
         
-        diasNecessarios++;
-        assuntosPorDiaSemana[diasNecessarios] = assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto
+        while (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas <= 0) {
+            assuntoAtualIndex++;
+            if (assuntoAtualIndex >= assuntosOrdenadosPorPrioridade.length) {
+                break;
+            }
+        }
+    });
+
+    return assuntosPorDiaSemana;
+}//testar
+
+function DOM_showAssuntoPorDia(){
+    assuntosPorDiaSemana = getAssuntosPorDiaSemana();
+    
+    document.getElementById('segunda_assunto').innerText = `Segunda-feira: ${assuntosPorDiaSemana[1]}`;
+    document.getElementById('terca_assunto').innerText = `Terça-feira: ${assuntosPorDiaSemana[2]}`;
+    document.getElementById('quarta_assunto').innerText = `Quarta-feira: ${assuntosPorDiaSemana[3]}`;
+    document.getElementById('quinta_assunto').innerText = `Quinta-feira: ${assuntosPorDiaSemana[4]}`;
+    document.getElementById('sexta_assunto').innerText = `Sexta-feira: ${assuntosPorDiaSemana[5]}`;
+    document.getElementById('sabado_assunto').innerText = `Sábado: ${assuntosPorDiaSemana[6]}`;
+    document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDiaSemana[0]}`;
+}//testar
+
+function formatarTempo(segundos) {
+    let horas = Math.floor(segundos / 3600);
+    let minutos = Math.floor((segundos % 3600) / 60);
+    let segundosRestantes = segundos % 60;
+  
+    if(horas == 0){
+        return `${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
     }
     
-    while (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas <= 0) {
-        assuntoAtualIndex++;
-        if (assuntoAtualIndex >= assuntosOrdenadosPorPrioridade.length) {
-            break;
-        }
-    }
-});
-
-
-
-document.getElementById('segunda_assunto').innerText = `Segunda-feira: ${assuntosPorDiaSemana[1]}`;
-document.getElementById('terca_assunto').innerText = `Terça-feira: ${assuntosPorDiaSemana[2]}`;
-document.getElementById('quarta_assunto').innerText = `Quarta-feira: ${assuntosPorDiaSemana[3]}`;
-document.getElementById('quinta_assunto').innerText = `Quinta-feira: ${assuntosPorDiaSemana[4]}`;
-document.getElementById('sexta_assunto').innerText = `Sexta-feira: ${assuntosPorDiaSemana[5]}`;
-document.getElementById('sabado_assunto').innerText = `Sábado: ${assuntosPorDiaSemana[6]}`;
-document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDiaSemana[0]}`;
-
-
+    return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
+}//testar essa função
 
     let totalSegundos = 60 * 60 * horasAEstudarHoje; // 1 hora (3600 segundos)
     let segundosEtapa1 = totalSegundos * (20/100);
@@ -268,21 +324,8 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
     let segundosEtapa4 = totalSegundos * (20/100);
     let intervalId;
     
-    if(horasTotais.findIndex(item => item.dia === hoje) === -1){
+    if(horasDiarias.findIndex(item => item.dia === hoje) === -1){
         totalSegundos = false;
-    }
-
-    // Função para formatar o tempo em HH:MM:SS
-    function formatarTempo(segundos) {
-        let horas = Math.floor(segundos / 3600);
-        let minutos = Math.floor((segundos % 3600) / 60);
-        let segundosRestantes = segundos % 60;
-      
-        if(horas == 0){
-            return `${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
-        }
-        
-        return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
     }
 
     // Função para atualizar o tempo restante e exibir
@@ -376,8 +419,8 @@ document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDi
     document.getElementById("etapa-2-description").innerText = `Etapa 2 - Teoria`
     document.getElementById("etapa-3-description").innerText = `Etapa 3 - Resoluções de questões`
     document.getElementById("etapa-4-description").innerText = `Etapa 4 - Criar flashcards Anki`
-
-
-    });
+    listMateriasEAssuntos()
+    ordenarAssuntosPorPrioridade()
+    DOM_showAssuntoPorDia();
 
 module.exports = { getHorasEstudosPorDia, convertHorasParaHorasEMinutos };
