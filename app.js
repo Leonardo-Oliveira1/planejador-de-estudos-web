@@ -1,5 +1,9 @@
 let horasDiarias = [
     {
+        dia: 'domingo',
+        tempo: 0
+    },
+    {
         dia: 'segunda',
         tempo: 0
     },
@@ -21,10 +25,6 @@ let horasDiarias = [
     },
     {
         dia: 'sabado',
-        tempo: 0
-    },
-    {
-        dia: 'domingo',
         tempo: 0
     },
 ];
@@ -146,7 +146,7 @@ let materias = [
                 nome: 'Engenharia de Requisitos',
                 horas_estimadas: 1,
                 prioridade: 4,
-                totalmente_aprendido: false
+                totalmente_aprendido: true
             }
         ]
     },
@@ -161,9 +161,9 @@ let materias = [
             },
             {
                 nome: 'Garantia de Qualidade',
-                horas_estimadas: 3,
+                horas_estimadas: 0.5,
                 prioridade: 4,
-                totalmente_aprendido: false
+                totalmente_aprendido: true
             }
         ]
     },
@@ -255,31 +255,75 @@ function ordenarAssuntosPorPrioridade(){
     return assuntosOrdenadosPorPrioridade;
 }//testar
 
-function getAssuntosPorDiaSemana(){
-    let diasNecessarios = 0;
-    let assuntoAtualIndex = 0;
+function getDiasSemEstudo(){
     let assuntosPorDiaSemana = {
-        0: "",
         1: "",
         2: "",
         3: "",
         4: "",
         5: "",
-        6: ""
+        6: "",
+        7: ""
     };
 
+    for(let i = 0; i < 7; i++){
+        if(horasDiarias[i].tempo == 0){
+            assuntosPorDiaSemana[i] = "--";
+        }
+    }
+
+    return assuntosPorDiaSemana;
+}
+
+function getAssuntosPorDiaSemana(){
+    let diasNecessarios = 0;
+    let assuntoAtualIndex = 0;
+    let assuntosPorDiaSemana = getDiasSemEstudo();
     let assuntosOrdenadosPorPrioridade = ordenarAssuntosPorPrioridade();
+
     horasDiarias.forEach(dia => {
         if (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas > -1) {
             assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas -= dia.tempo;
             
-            if(dia.tempo == 0){
-                diasNecessarios++;
-                assuntosPorDiaSemana[diasNecessarios] = "N/A"
+            if(diasNecessarios < 8){
+                assuntosPorDiaSemana[diasNecessarios] = assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto
             }
-
             diasNecessarios++;
-            assuntosPorDiaSemana[diasNecessarios] = assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto
+            
+            if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                diasNecessarios++;
+
+                if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                    diasNecessarios++;
+
+                    if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                        diasNecessarios++;
+
+                        if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                            diasNecessarios++;
+
+                            if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                                diasNecessarios++;
+    
+                                if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                                    diasNecessarios++;
+
+                                    if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                                        diasNecessarios++;
+
+                                        if(assuntosPorDiaSemana[diasNecessarios] == "--"){
+                                            diasNecessarios++;
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
         }
         
         while (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas <= 0) {
@@ -288,6 +332,8 @@ function getAssuntosPorDiaSemana(){
                 break;
             }
         }
+
+        console.log(assuntosPorDiaSemana)
     });
 
     return assuntosPorDiaSemana;
@@ -302,7 +348,7 @@ function DOM_showAssuntoPorDia(){
     document.getElementById('quinta_assunto').innerText = `Quinta-feira: ${assuntosPorDiaSemana[4]}`;
     document.getElementById('sexta_assunto').innerText = `Sexta-feira: ${assuntosPorDiaSemana[5]}`;
     document.getElementById('sabado_assunto').innerText = `Sábado: ${assuntosPorDiaSemana[6]}`;
-    document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDiaSemana[0]}`;
+    document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDiaSemana[7]}`;
 }//testar
 
 function formatarTempo(segundos) {
