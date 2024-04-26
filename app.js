@@ -101,6 +101,78 @@ function DOM_exibicaoDeHorasIniciais() {
     document.getElementById(`horasPorSemana`).innerText = `Horas semanais de estudos: ${convertHorasParaHorasEMinutos(getHorasEstudosTotais())}`;
 }// não precisa testar por ser DOM
 
+
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        let dia = (this.id).split("-")[0];
+        let inicio_html = document.getElementById(`${dia}-inicio`);
+        let fim_html = document.getElementById(`${dia}-fim`);
+        let horas_estudadas = document.getElementById(`${dia}-horas-estudadas`);
+        
+        if(!this.checked){
+            inicio_html.disabled = true;
+            fim_html.disabled = true;
+        
+            horasDiarias[convertDiaTextToDiaNumber(dia)].tempo = 0;
+        
+            horas_estudadas.innerText = "--";
+        
+        } else {
+            inicio_html.disabled = false;
+            fim_html.disabled = false;
+            horasDiarias[convertDiaTextToDiaNumber(dia)].tempo = 2;
+        
+        }
+        DOM_exibicaoDeHorasIniciais()
+        DOM_exibicaoInformacaoIniciais(horasDiarias[convertDiaTextToDiaNumber(hoje)].tempo)
+    });
+});
+
+document.querySelectorAll('input[type="time"]').forEach(input => {
+    input.addEventListener('change', function() {
+        let dia = (this.id).split("-")[0];
+        DOM_showHorasEstudadas(dia);
+        DOM_exibicaoInformacaoIniciais(horasDiarias[convertDiaTextToDiaNumber(hoje)].tempo)//problema está aqui
+    });
+});
+
+function convertDiaTextToDiaNumber(text){
+
+    let result = "";
+
+    switch (text) {
+        case "domingo":
+            result = 0; 
+            break;
+        case "segunda":
+            result = 1; 
+            break;
+
+        case "terca":
+            result = 2; 
+            break;
+
+        case "quarta":
+            result = 3; 
+            break;
+
+        case "quinta":
+            result = 4; 
+            break;
+
+        case "sexta":
+            result = 5; 
+            break;
+
+        case "sabado":
+            result = 6; 
+            break;
+    }
+
+    return result;
+}
+
+
 DOM_exibicaoDeHorasIniciais()
 
 let horasAEstudarHoje = horasDiarias.find(arr => arr.dia === hoje);
@@ -333,7 +405,6 @@ function getAssuntosPorDiaSemana(){
             }
         }
 
-        console.log(assuntosPorDiaSemana)
     });
 
     return assuntosPorDiaSemana;
@@ -363,110 +434,139 @@ function formatarTempo(segundos) {
     return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
 }//testar essa função
 
-    let totalSegundos = 60 * 60 * horasAEstudarHoje; // 1 hora (3600 segundos)
-    let segundosEtapa1 = totalSegundos * (20/100);
-    let segundosEtapa2 = totalSegundos * (30/100);
-    let segundosEtapa3 = totalSegundos * (30/100);
-    let segundosEtapa4 = totalSegundos * (20/100);
-    let intervalId;
-    
+function getTempoEtapas(horasHoje){
+    let totalSegundos = 60 * 60 * horasHoje;
+    let etapas = [
+        {
+            "descricao": "Revisão",
+            "duracao": totalSegundos * 0.2
+        },
+        {
+            "descricao": "Teoria",
+            "duracao": totalSegundos * 0.3
+        },
+        {
+            "descricao": "Questões",
+            "duracao": totalSegundos * 0.3
+        },
+        {
+            "descricao": "Anotações",
+            "duracao": totalSegundos * 0.2
+        }
+    ]
+    return etapas;
+}
+
     if(horasDiarias.findIndex(item => item.dia === hoje) === -1){
         totalSegundos = false;
     }
 
-    // Função para atualizar o tempo restante e exibir
-    function cronometroEtapa1() {
-        document.getElementById('etapa-1-counter').textContent = `${formatarTempo(segundosEtapa1)}`;
-        document.title = `Revisão: ${formatarTempo(segundosEtapa1)}`
-        if (segundosEtapa1 === 0) {
-            clearInterval(intervalId);
-            document.getElementById("etapa-1-counter").style.display = "none";
-            document.getElementById("etapa-2-counter").style.display = "block";
+    function cronometroPorEtapa(etapa, horasHoje){
 
-            document.getElementById("etapa-1-description").style.display = "none";
-            document.getElementById("etapa-2-description").style.display = "block";
-            cronometroEtapa2()
-        } else {
-            segundosEtapa1--;
+        let horasUtilizadas = null;
+
+        horasUtilizadas = !horasHoje ? horasAEstudarHoje : horasHoje;
+
+        let segundosEtapa = 0;
+
+        switch(etapa) {
+            case 1:
+                segundosEtapa = getTempoEtapas(horasUtilizadas)[0].duracao;
+                break;
+            case 2:
+                segundosEtapa = getTempoEtapas(horasUtilizadas)[1].duracao;
+                break;
+            case 3:
+                segundosEtapa = getTempoEtapas(horasUtilizadas)[2].duracao;
+                break;
+            case 4:
+                segundosEtapa = getTempoEtapas(horasUtilizadas)[3].duracao;
+                break;
+            default:
+                segundosEtapa = 0;
+                break;
         }
+
+        segundosEtapa--;
+
+        let cronometro = setInterval(() => {
+            document.getElementById(`etapa-${etapa}-counter`).textContent = `${formatarTempo(segundosEtapa)}`;
+            document.title = `Revisão: ${formatarTempo(segundosEtapa)}`
+
+            if (segundosEtapa === 0) {
+                clearInterval(cronometro)
+
+                if(etapa < 4){
+                    document.getElementById(`etapa-${etapa}-counter`).style.display = `none`;
+                    document.getElementById(`etapa-${etapa + 1}-counter`).style.display = `block`;
+        
+                    document.getElementById(`etapa-${etapa}-description`).style.display = `none`;
+                    document.getElementById(`etapa-${etapa + 1}-description`).style.display = `block`;
+                } else {
+                    document.getElementById(`etapa-${etapa}-description`).style.display = "none";
+                    document.getElementById(`etapa-${etapa}-counter`).innerText = "Estudos finalizados."
+                }
+
+                switch(etapa) {
+                    case 1:
+                        cronometroPorEtapa(2, horasHoje);
+                        break;
+                    case 2:
+                        cronometroPorEtapa(3, horasHoje);
+                        break;
+                    case 3:
+                        cronometroPorEtapa(4, horasHoje);
+                        break;
+                }
+            } else {
+                segundosEtapa--;
+            }
+
+        }, 1000)
     }
-
-    function cronometroEtapa2() {
-        document.getElementById('etapa-2-counter').textContent = `${formatarTempo(segundosEtapa2)}`;
-        document.title = `Teoria: ${formatarTempo(segundosEtapa2)}`
-        if (segundosEtapa2 === 0) {
-            clearInterval(intervalId);
-
-            document.getElementById("etapa-2-counter").style.display = "none";
-            document.getElementById("etapa-3-counter").style.display = "block";
-
-            document.getElementById("etapa-2-description").style.display = "none";
-            document.getElementById("etapa-3-description").style.display = "block";
-
-            cronometroEtapa3()
-        } else {
-            intervalId = setInterval(cronometroEtapa1, 1000);
-            segundosEtapa2--;
-        }
-    }
-
-    function cronometroEtapa3() {
-        document.getElementById('etapa-3-counter').textContent = `${formatarTempo(segundosEtapa3)}`;
-        document.title = `Questões: ${formatarTempo(segundosEtapa3)}`
-        if (segundosEtapa3 === 0) {
-            clearInterval(intervalId);
-
-            document.getElementById("etapa-3-counter").style.display = "none";
-            document.getElementById("etapa-4-counter").style.display = "block";
-
-            document.getElementById("etapa-3-description").style.display = "none";
-            document.getElementById("etapa-4-description").style.display = "block";
-
-            cronometroEtapa4()
-        } else {
-            intervalId = setInterval(cronometroEtapa2, 1000);
-            segundosEtapa3--;
-        }
-    }
-
-    function cronometroEtapa4() {
-        document.getElementById('etapa-4-counter').textContent = `${formatarTempo(segundosEtapa4)}`;
-        document.title = `Anotações: ${formatarTempo(segundosEtapa4)}`
-        if (segundosEtapa4 === 0) {
-            document.getElementById("etapa-4-description").style.display = "none";
-            document.getElementById("etapa-4-counter").innerText = "Estudos finalizados."
-            clearInterval(intervalId);
-        } else {
-            intervalId = setInterval(cronometroEtapa3, 1000);
-            segundosEtapa4--;
-        }
-    }
-
-
     
-    document.getElementById('btn-comecar').addEventListener('click', function() {
-        if (totalSegundos !== false) {
-            intervalId = setInterval(cronometroEtapa1, 1000);
-            document.getElementById('btn-comecar').disabled = true; // desabilita o botão começar
-            document.getElementById('btn-comecar').innerText = "Pausar"
-        } else {
-            document.getElementById('tempo-restante').textContent = `Hoje não há estudos!`;
+    
+    let eventoAdicionado = false;
+
+    document.addEventListener('focusout', function(event) {
+        if (event.target.tagName === 'INPUT') {
+            DOM_exibicaoInformacaoIniciais(horasDiarias[convertDiaTextToDiaNumber(hoje)].tempo, true)//problema está aqui
         }
     });
 
-    document.getElementById('totalHorasHoje').innerText = `Estudo por ${convertHorasParaHorasEMinutos(horasAEstudarHoje)}`;
-    document.title = `Revisão: ${formatarTempo(segundosEtapa1)}`
-    document.getElementById("etapa-1-counter").innerText = `${formatarTempo(segundosEtapa1)}`
-    document.getElementById("etapa-2-counter").innerText = `${formatarTempo(segundosEtapa2)}`
-    document.getElementById("etapa-3-counter").innerText = `${formatarTempo(segundosEtapa3)}`
-    document.getElementById("etapa-4-counter").innerText = `${formatarTempo(segundosEtapa4)}`
+    DOM_exibicaoInformacaoIniciais(horasAEstudarHoje);
 
-    document.getElementById("etapa-1-description").innerText = `Etapa 1 - Revisão do dia anterior`
-    document.getElementById("etapa-2-description").innerText = `Etapa 2 - Teoria`
-    document.getElementById("etapa-3-description").innerText = `Etapa 3 - Resoluções de questões`
-    document.getElementById("etapa-4-description").innerText = `Etapa 4 - Criar flashcards Anki`
-    listMateriasEAssuntos()
-    ordenarAssuntosPorPrioridade()
-    DOM_showAssuntoPorDia();
+    function DOM_exibicaoInformacaoIniciais(horasHoje, permiteCronometro){
+        totalSegundos = 10;
+        document.getElementById('totalHorasHoje').innerText = `Estudo por ${convertHorasParaHorasEMinutos(horasHoje)}`;
+        document.title = `Revisão: ${formatarTempo(getTempoEtapas(horasHoje)[0].duracao)}`
+        document.getElementById("etapa-1-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[0].duracao)}`
+        document.getElementById("etapa-2-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[1].duracao)}`
+        document.getElementById("etapa-3-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[2].duracao)}`
+        document.getElementById("etapa-4-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[3].duracao)}`
+    
+        document.getElementById("etapa-1-description").innerText = `Etapa 1 - Revisão do dia anterior`
+        document.getElementById("etapa-2-description").innerText = `Etapa 2 - Teoria`
+        document.getElementById("etapa-3-description").innerText = `Etapa 3 - Resoluções de questões`
+        document.getElementById("etapa-4-description").innerText = `Etapa 4 - Criar flashcards Anki`
+        listMateriasEAssuntos()
+        ordenarAssuntosPorPrioridade()
+        DOM_showAssuntoPorDia();
+    
+        //TESTAR ISSO
+        if (!eventoAdicionado && permiteCronometro) {
+            document.getElementById('btn-comecar').addEventListener('click', function() {
+                if (totalSegundos !== false) {
+                    cronometroPorEtapa(1, horasHoje)
+                    
+                    this.disabled = true;
+                    this.innerText = "Pausar"
+                } else {
+                    document.getElementById('tempo-restante').textContent = `Hoje não há estudos!`;
+                }
+            });
+            eventoAdicionado = true;
+        }
+    }
 
 module.exports = { getHorasEstudosPorDia, convertHorasParaHorasEMinutos };
