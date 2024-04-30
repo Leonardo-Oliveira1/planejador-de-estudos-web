@@ -23,7 +23,6 @@
             padding: 0px 12px;
             border-radius: 4px;
             box-shadow: rgb(235, 235, 235) 0px 6px 0px;
-            font-family: ArialRounded;
             font-size: 22px;
             height: 55px;
             color: rgb(186, 73, 73);
@@ -66,14 +65,15 @@
                 <a class="nav-link" onclick="DOM_showElement('conteudos', this)">Conteúdos</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" onclick="DOM_showElement('conteudo_semana', this)" aria-disabled="true">Conteúdo semanal</a>
+                <a class="nav-link" onclick="DOM_showElement('conteudo_semana', this)" aria-disabled="true">Próximos assuntos</a>
             </li>
         </ul>
 
         
 
         <div id="cronograma">        
-            <h1 id="totalHorasHoje"></h1>
+            <h2 id="assunto_a_estudar"></h2>
+            <center><h3 id="totalHorasHoje"></h3></center>
             <div style="display: flex; background-color: #c15c5c;" class="w-100 flex-column align-items-center">
                 <span class="fs-5 mt-3" id="etapa-1-description"></span>
                 <span id="etapa-2-description" style="display: none;"></span>
@@ -87,51 +87,54 @@
 
                 <button id="btn-comecar" class="mb-2">Começar</button><br>
             </div>
+
+            
+            <div id="progresso"></div>
         </div>
 
         <div id="horarios" style="display: none;">
             <input type="checkbox" id="segunda-habilitado" checked>
             <label>Segunda-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-inicio" value="21:59"
+            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-inicio" value="21:29" disabled
                 required />
-            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-fim" value="21:30" required disabled/>
             <span id="segunda-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="terca-habilitado" checked>
             <label>Terça-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-inicio" value="20:30" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-inicio" value="20:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-fim" value="21:30" required disabled/>
             <span id="terca-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="quarta-habilitado" checked>
             <label>Quarta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-inicio" value="18:00" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-inicio" value="20:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-fim" value="21:30" required disabled/>
             <span id="quarta-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="quinta-habilitado" checked>
+            <input type="checkbox" id="quinta-habilitado">
             <label>Quinta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-inicio" value="18:00" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-inicio" value="20:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-fim" value="21:30" required disabled/>
             <span id="quinta-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="sexta-habilitado" checked>
+            <input type="checkbox" id="sexta-habilitado">
             <label>Sexta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-inicio" value="19:00" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-inicio" value="20:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-fim" value="21:30" required disabled/>
             <span id="sexta-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="sabado-habilitado" checked>
             <label>Sábado:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-inicio" value="20:00" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-inicio" value="08:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-fim" value="11:30" required disabled/>
             <span id="sabado-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="domingo-habilitado" checked>
             <label>Domingo:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-inicio" value="20:00"
-                required />
-            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-inicio" value="20:30"
+                required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-fim" value="22:00" required disabled/>
             <span id="domingo-horas-estudadas">--</span><br>
 
             <br>
@@ -145,14 +148,8 @@
         </div>
 
         <div id="conteudo_semana" style="display: none;">
-            <h1>Assuntos semanais</h1>
-            <h2 id="segunda_assunto"></h2>
-            <h2 id="terca_assunto">Terça-feira:</h2>
-            <h2 id="quarta_assunto">Quarta-feira:</h2>
-            <h2 id="quinta_assunto">Quinta-feira:</h2>
-            <h2 id="sexta_assunto">Sexta-feira:</h2>
-            <h2 id="sabado_assunto">Sábado:</h2>
-            <h2 id="domingo_assunto">Domingo:</h2>
+            <h1>Próximos assuntos da semana</h1>
+            <h2 id="assuntoList"></h2>
         </div>
 
         <script>

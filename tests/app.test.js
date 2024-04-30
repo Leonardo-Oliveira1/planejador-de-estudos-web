@@ -27,7 +27,6 @@ const html = `<!DOCTYPE html>
             padding: 0px 12px;
             border-radius: 4px;
             box-shadow: rgb(235, 235, 235) 0px 6px 0px;
-            font-family: ArialRounded;
             font-size: 22px;
             height: 55px;
             color: rgb(186, 73, 73);
@@ -70,14 +69,15 @@ const html = `<!DOCTYPE html>
                 <a class="nav-link" onclick="DOM_showElement('conteudos', this)">Conteúdos</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" onclick="DOM_showElement('conteudo_semana', this)" aria-disabled="true">Conteúdo semanal</a>
+                <a class="nav-link" onclick="DOM_showElement('conteudo_semana', this)" aria-disabled="true">Próximos assuntos</a>
             </li>
         </ul>
 
         
 
         <div id="cronograma">        
-            <h1 id="totalHorasHoje"></h1>
+            <h2 id="assunto_a_estudar"></h2>
+            <center><h3 id="totalHorasHoje"></h3></center>
             <div style="display: flex; background-color: #c15c5c;" class="w-100 flex-column align-items-center">
                 <span class="fs-5 mt-3" id="etapa-1-description"></span>
                 <span id="etapa-2-description" style="display: none;"></span>
@@ -91,51 +91,54 @@ const html = `<!DOCTYPE html>
 
                 <button id="btn-comecar" class="mb-2">Começar</button><br>
             </div>
+
+            
+            <div id="progresso"></div>
         </div>
 
         <div id="horarios" style="display: none;">
             <input type="checkbox" id="segunda-habilitado" checked>
             <label>Segunda-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-inicio" value="20:30"
+            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-inicio" value="16:00" disabled
                 required />
-            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-fim" value="20:00" required disabled/>
             <span id="segunda-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="terca-habilitado" checked>
             <label>Terça-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-inicio" value="20:30" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-inicio" value="20:00" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-fim" value="22:01" required disabled/>
             <span id="terca-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="quarta-habilitado" checked>
             <label>Quarta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-inicio" value="20:30" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-inicio" value="20:00" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-fim" value="22:02" required disabled/>
             <span id="quarta-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="quinta-habilitado">
             <label>Quinta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-inicio" value="00:00" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-fim" value="00:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-inicio" value="20:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-fim" value="21:30" required disabled/>
             <span id="quinta-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="sexta-habilitado">
             <label>Sexta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-inicio" value="00:00" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-fim" value="00:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-inicio" value="20:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-fim" value="21:30" required disabled/>
             <span id="sexta-horas-estudadas">--</span><br>
 
             <input type="checkbox" id="sabado-habilitado" checked>
             <label>Sábado:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-inicio" value="20:30" required />
-            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-fim" value="22:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-inicio" value="08:30" required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-fim" value="11:30" required disabled/>
             <span id="sabado-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="domingo-habilitado">
+            <input type="checkbox" id="domingo-habilitado" checked>
             <label>Domingo:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-inicio" value="00:00"
-                required />
-            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-fim" value="00:00" required />
+            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-inicio" value="20:30"
+                required disabled/>
+            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-fim" value="22:00" required disabled/>
             <span id="domingo-horas-estudadas">--</span><br>
 
             <br>
@@ -149,14 +152,8 @@ const html = `<!DOCTYPE html>
         </div>
 
         <div id="conteudo_semana" style="display: none;">
-            <h1>Assuntos semanais</h1>
-            <h2 id="segunda_assunto"></h2>
-            <h2 id="terca_assunto">Terça-feira:</h2>
-            <h2 id="quarta_assunto">Quarta-feira:</h2>
-            <h2 id="quinta_assunto">Quinta-feira:</h2>
-            <h2 id="sexta_assunto">Sexta-feira:</h2>
-            <h2 id="sabado_assunto">Sábado:</h2>
-            <h2 id="domingo_assunto">Domingo:</h2>
+            <h1>Próximos assuntos da semana</h1>
+            <h2 id="assuntoList"></h2>
         </div>
 
         <script>
@@ -209,9 +206,156 @@ test('get times input data', () => {
     expect(getHorasEstudosPorDia("quarta")).toBe("2 horas e 2 minutos");
 });
 
+const horas_dias = [1, 3, 21.5, 11.5, 0.5, 10, 5]
+test('add to horas diarias array', () => {
+    const { addHorasDiariasToArray } = require('./../app');
+
+    let horasDiarias = [
+        {
+            dia: 'domingo',
+            tempo: 0
+        },
+        {
+            dia: 'segunda',
+            tempo: 0
+        },
+        {
+            dia: 'terca',
+            tempo: 0
+        },
+        {
+            dia: 'quarta',
+            tempo: 0
+        },
+        {
+            dia: 'quinta',
+            tempo: 0
+        },
+        {
+            dia: 'sexta',
+            tempo: 0
+        },
+        {
+            dia: 'sabado',
+            tempo: 0
+        },
+    ];
+    
+    horasDiarias = addHorasDiariasToArray("domingo", horas_dias[0]);
+    horasDiarias = addHorasDiariasToArray("segunda", horas_dias[1]);
+    horasDiarias = addHorasDiariasToArray("terca", horas_dias[2]);
+    horasDiarias = addHorasDiariasToArray("quarta", horas_dias[3]);
+    horasDiarias = addHorasDiariasToArray("quinta", horas_dias[4]);
+    horasDiarias = addHorasDiariasToArray("sexta", 0);
+    horasDiarias = addHorasDiariasToArray("sabado", horas_dias[6]);
+    horasDiarias = addHorasDiariasToArray("sexta", horas_dias[5]);
+
+    expect(horasDiarias[0].tempo).toBe(horas_dias[0]);
+    expect(horasDiarias[1].tempo).toBe(horas_dias[1]);
+    expect(horasDiarias[2].tempo).toBe(horas_dias[2]);
+    expect(horasDiarias[3].tempo).toBe(horas_dias[3]);
+    expect(horasDiarias[4].tempo).toBe(horas_dias[4]);
+    expect(horasDiarias[5].tempo).toBe(horas_dias[5]);
+    expect(horasDiarias[6].tempo).toBe(horas_dias[6]);
+});
+
 test('convert horas decimal para horas e minutos', () => {
     const { convertHorasParaHorasEMinutos } = require('./../app');
     expect(convertHorasParaHorasEMinutos(1)).toBe("1 hora");
     expect(convertHorasParaHorasEMinutos(2)).toBe("2 horas");
     expect(convertHorasParaHorasEMinutos(2.32)).toBe("2 horas e 19 minutos");
+});
+
+test('get horas totais de estudo', () => {
+    const { getHorasEstudosTotais } = require('./../app');
+
+    let horasTotais = horas_dias[0] + horas_dias[1] + 
+    horas_dias[2] + horas_dias[3] + horas_dias[4] + 
+    horas_dias[5] + horas_dias[6];
+
+    expect(getHorasEstudosTotais()).toBe(horasTotais);
+});
+
+test('ordenar assuntos por prioridade', () => {
+    const { ordenarAssuntosPorPrioridade } = require('./../app');
+
+    let materias = [
+        {
+            nome: 'Química',
+            assuntos: [
+                {
+                    nome: 'Nomenclatura IUPAC',
+                    horas_estimadas: 3.2,
+                    prioridade: 5,
+                    totalmente_aprendido: false
+                },
+                {
+                    nome: 'NOX',
+                    horas_estimadas: 2,
+                    prioridade: 4,
+                    totalmente_aprendido: false
+                },
+            ]
+        },
+        {
+            nome: 'Física',
+            assuntos: [
+                {
+                    nome: 'Corrente elétrica',
+                    horas_estimadas: 1,
+                    prioridade: 1,
+                    totalmente_aprendido: false
+                }
+            ]
+        },
+        {
+            nome: 'História',
+            assuntos: [            
+                {
+                    nome: 'Egito antigo',
+                    horas_estimadas: 1,
+                    prioridade: 2,
+                    totalmente_aprendido: true
+                },
+                {
+                    nome: 'Grécia',
+                    horas_estimadas: 1,
+                    prioridade: 1,
+                    totalmente_aprendido: true
+                },
+                {
+                    nome: 'Proclamação da República',
+                    horas_estimadas: 1,
+                    prioridade: 3,
+                    totalmente_aprendido: false
+                }
+            ]
+        },
+    ];
+
+    let expected = [
+        {
+            "assunto": "Nomenclatura IUPAC", 
+            "horas": 3.2, 
+            "prioridade": 5
+        }, 
+        {
+            "assunto": "NOX", 
+            "horas": 2, 
+            "prioridade": 4
+        }, 
+        {
+            "assunto": "Proclamação da República", 
+            "horas": 1, 
+            "prioridade": 3
+        },
+        {
+            "assunto": "Corrente elétrica", 
+            "horas": 1, 
+            "prioridade": 1
+        } 
+    ]
+
+
+    expect(ordenarAssuntosPorPrioridade(materias)).toEqual(expected);
 });

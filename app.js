@@ -43,20 +43,17 @@ function getHorasEstudosPorDia(dia){
     var diferencaEmMilissegundos = horaFinalDate - horaInicialDate;
     var tempoEmHoras = diferencaEmMilissegundos / (1000 * 60 * 60)
 
-    addHorasDiariasToArray(dia, tempoEmHoras);
+    horasDiarias = addHorasDiariasToArray(dia, tempoEmHoras);
 
     return convertHorasParaHorasEMinutos(tempoEmHoras);
-}//possui testes
-
+}
 
 function addHorasDiariasToArray(dia, tempoEmHoras){
-    let index = horasDiarias.findIndex(item => item.dia === dia);
-    if (index !== -1) {
-        horasDiarias[index].tempo = tempoEmHoras;
-    } else {
-        horasDiarias.push({ dia: dia, tempo: tempoEmHoras });
-    }
-}//não precisa de testes
+    let i = horasDiarias.findIndex(item => item.dia === dia);
+    horasDiarias[i].tempo = tempoEmHoras;
+    
+    return horasDiarias; 
+}
 
 function convertHorasParaHorasEMinutos(horas) {
     var horasInteiras = Math.floor(horas);
@@ -71,7 +68,7 @@ function convertHorasParaHorasEMinutos(horas) {
     } else {
         return `${horasInteiras} ${horasTexto} e ${minutos} ${minutosTexto}`;
     }
-}//possui testes
+}
 
 function getHorasEstudosTotais(){
     var result = 0;
@@ -79,9 +76,9 @@ function getHorasEstudosTotais(){
     horasDiarias.forEach(e => {
         result += e.tempo;
     });
-    
+
     return result;
-}// não precisa de testes
+}
 
 function DOM_showHorasEstudadas(dia){
     if(document.getElementById(`${dia}-habilitado`).checked){
@@ -113,65 +110,15 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             inicio_html.disabled = true;
             fim_html.disabled = true;
         
-            horasDiarias[convertDiaTextToDiaNumber(dia)].tempo = 0;
-        
             horas_estudadas.innerText = "--";
         
         } else {
             inicio_html.disabled = false;
             fim_html.disabled = false;
-            horasDiarias[convertDiaTextToDiaNumber(dia)].tempo = 2;
-        
         }
         DOM_exibicaoDeHorasIniciais()
-        DOM_exibicaoInformacaoIniciais(horasDiarias[convertDiaTextToDiaNumber(hoje)].tempo)
     });
 });
-
-document.querySelectorAll('input[type="time"]').forEach(input => {
-    input.addEventListener('change', function() {
-        let dia = (this.id).split("-")[0];
-        DOM_showHorasEstudadas(dia);
-        DOM_exibicaoInformacaoIniciais(horasDiarias[convertDiaTextToDiaNumber(hoje)].tempo)//problema está aqui
-    });
-});
-
-function convertDiaTextToDiaNumber(text){
-
-    let result = "";
-
-    switch (text) {
-        case "domingo":
-            result = 0; 
-            break;
-        case "segunda":
-            result = 1; 
-            break;
-
-        case "terca":
-            result = 2; 
-            break;
-
-        case "quarta":
-            result = 3; 
-            break;
-
-        case "quinta":
-            result = 4; 
-            break;
-
-        case "sexta":
-            result = 5; 
-            break;
-
-        case "sabado":
-            result = 6; 
-            break;
-    }
-
-    return result;
-}
-
 
 DOM_exibicaoDeHorasIniciais()
 
@@ -183,111 +130,101 @@ horasAEstudarHoje = (horasAEstudarHoje == undefined) ? 0 : horasAEstudarHoje.tem
 var listaMaterias = document.getElementById('lista-materias');
 let materias = [
     {
-        nome: 'Estrutura de dados e algoritmos',
+        nome: 'Química',
         assuntos: [
             {
-                nome: 'Arrays',
-                horas_estimadas: 4,
-                prioridade: 1,
-                totalmente_aprendido: true
-            },
-            {
-                nome: 'Filas',
-                horas_estimadas: 4,
-                prioridade: 2,
+                nome: 'Nomenclatura IUPAC',
+                horas_estimadas: 3.2,
+                prioridade: 5,
                 totalmente_aprendido: false
             },
             {
-                nome: 'Pilhas',
-                horas_estimadas: 4,
-                prioridade: 2,
-                totalmente_aprendido: false
-            }
-        ]
-    },
-    {
-        nome: 'Engenharia de Software',
-        assuntos: [
-            {
-                nome: 'Metodologias Ágeis',
-                horas_estimadas: 1,
-                prioridade: 3,
-                totalmente_aprendido: true
-            },
-            {
-                nome: 'Engenharia de Requisitos',
-                horas_estimadas: 1,
+                nome: 'NOX',
+                horas_estimadas: 2,
                 prioridade: 4,
-                totalmente_aprendido: true
+                totalmente_aprendido: false
+            },
+        ]
+    },
+    {
+        nome: 'Física',
+        assuntos: [
+            {
+                nome: 'Corrente elétrica',
+                horas_estimadas: 1,
+                prioridade: 1,
+                totalmente_aprendido: false
             }
         ]
     },
     {
-        nome: 'Qualidade de Software',
+        nome: 'História',
         assuntos: [            
             {
-                nome: 'Testes de Software',
-                horas_estimadas: 5,
+                nome: 'Judeus e hebreus',
+                horas_estimadas: 0.7,
+                prioridade: 1,
+                totalmente_aprendido: false
+            },
+            {
+                nome: 'Mesopotâmia',
+                horas_estimadas: 1,
                 prioridade: 2,
                 totalmente_aprendido: false
             },
             {
-                nome: 'Garantia de Qualidade',
-                horas_estimadas: 0.5,
-                prioridade: 4,
-                totalmente_aprendido: true
+                nome: 'Egito antigo',
+                horas_estimadas: 1,
+                prioridade: 2,
+                totalmente_aprendido: false
+            },
+            {
+                nome: 'Grécia',
+                horas_estimadas: 1,
+                prioridade: 1,
+                totalmente_aprendido: false
+            },
+            {
+                nome: 'Proclamação da República',
+                horas_estimadas: 1,
+                prioridade: 1,
+                totalmente_aprendido: false
             }
         ]
     },
     {
-        nome: 'Bancos de Dados',
+        nome: 'Biologia',
         assuntos: [
             {
-                nome: 'Modelagem de Dados',
-                horas_estimadas: 5,
-                prioridade: 2,
-                totalmente_aprendido: false
+                nome: 'Imunização',
+                horas_estimadas: 0.4,
+                prioridade: 1,
+                totalmente_aprendido: true
             },
             {
-                nome: 'SQL',
-                horas_estimadas: 2,
+                nome: 'Formas de prevenção',
+                horas_estimadas: 0.4,
                 prioridade: 1,
-                totalmente_aprendido: false
+                totalmente_aprendido: true
+            },
+            {
+                nome: 'Medicamentos',
+                horas_estimadas: 0.5,
+                prioridade: 1,
+                totalmente_aprendido: true
             }
         ]
     }
 ];
 
 function getPrioridadeText(num){
-    let result = "";
+    let prioridades = ['muito baixa', 'baixa', 'normal', 'média', 'alta', 'crítica']
 
-    switch (num) {
-        case 1:
-            result = "baixa";
-            break;
-    
-        case 2:
-            result = "normal";
-            break;
-
-        case 3:
-            result = "média";
-            break;
-            
-        case 4:
-            result = "alta";
-            break;
-
-        case 5:
-            result = "crítica";
-            break;
-    }
-
-    return result;
-}//não precisa testar por ser função de longo prazo
+    return prioridades[num];
+}
 
 
-function listMateriasEAssuntos(){
+function DOM_listMateriasEAssuntos(){
     materias.forEach(materia => {
         let li = document.createElement('li');
         li.textContent = materia.nome;
@@ -309,9 +246,9 @@ function listMateriasEAssuntos(){
     
         listaMaterias.appendChild(li);
     });
-}//testar
+}
 
-function ordenarAssuntosPorPrioridade(){
+function ordenarAssuntosPorPrioridade(materias){
     let assuntosOrdenadosPorPrioridade = [];
 
     materias.forEach(materia =>{
@@ -325,101 +262,137 @@ function ordenarAssuntosPorPrioridade(){
     assuntosOrdenadosPorPrioridade = assuntosOrdenadosPorPrioridade.sort((a, b) => b.prioridade - a.prioridade);
 
     return assuntosOrdenadosPorPrioridade;
-}//testar
+}
 
 function getDiasSemEstudo(){
     let assuntosPorDiaSemana = {
+        0: "",
         1: "",
         2: "",
         3: "",
         4: "",
         5: "",
         6: "",
-        7: ""
     };
 
-    for(let i = 0; i < 7; i++){
+    for(let i = 0; i < 6; i++){
         if(horasDiarias[i].tempo == 0){
             assuntosPorDiaSemana[i] = "--";
         }
     }
 
     return assuntosPorDiaSemana;
+}//TESTAR
+
+function diaNumberToDiaText(number){
+    const day = ["domingo", "segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+
+    return day[number];
 }
 
+
+let assuntoEDuracao = [];
 function getAssuntosPorDiaSemana(){
     let diasNecessarios = 0;
     let assuntoAtualIndex = 0;
     let assuntosPorDiaSemana = getDiasSemEstudo();
-    let assuntosOrdenadosPorPrioridade = ordenarAssuntosPorPrioridade();
+    let assuntosOrdenadosPorPrioridade = ordenarAssuntosPorPrioridade(materias);
 
     horasDiarias.forEach(dia => {
         if (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas > -1) {
-            assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas -= dia.tempo;
-            
-            if(diasNecessarios < 8){
-                assuntosPorDiaSemana[diasNecessarios] = assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto
-            }
-            diasNecessarios++;
-            
+
+            // console.log(`${assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas} horas para aprender ${assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto} - ${dia.tempo} horas`)
+            assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas -= dia.tempo
+
             if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                 diasNecessarios++;
-
+            } else {
+                diasNecessarios++;
+            }
+            
+            if(diasNecessarios < 7 && assuntosPorDiaSemana[diasNecessarios] != "--"){
                 if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                     diasNecessarios++;
-
+    
                     if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                         diasNecessarios++;
-
+    
                         if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                             diasNecessarios++;
-
+    
                             if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                                 diasNecessarios++;
     
                                 if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                                     diasNecessarios++;
-
+        
                                     if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                                         diasNecessarios++;
-
+    
                                         if(assuntosPorDiaSemana[diasNecessarios] == "--"){
                                             diasNecessarios++;
+    
                                         }
+    
                                     }
-
                                 }
+    
                             }
-
                         }
+    
                     }
-
                 }
+                assuntosPorDiaSemana[diasNecessarios] = assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto
             }
+
+            
+
+
+            // console.log("assunto index: " +assuntoAtualIndex)
+            
         }
+
+        // console.log("HORAS RESTANTES: " + assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas + " na " + dia.dia)
+        // console.log("DIA PASSADOS: " + diasNecessarios)
+
         
         while (assuntosOrdenadosPorPrioridade[assuntoAtualIndex].horas <= 0) {
-            assuntoAtualIndex++;
+            
+            diasNecessarios--;
+            //COM DOMINGO DESATIVADO ISSO FUNCIONA, ATIVADO NÃO
+
+
+
+            if(diasNecessarios > 7){
+                break;
+            }
+            
+            assuntoEDuracao.push({"assunto": assuntosOrdenadosPorPrioridade[assuntoAtualIndex].assunto, "ultimo_dia": diasNecessarios})
             if (assuntoAtualIndex >= assuntosOrdenadosPorPrioridade.length) {
                 break;
             }
+            assuntoAtualIndex++;
         }
 
     });
 
-    return assuntosPorDiaSemana;
+    return assuntoEDuracao;
 }//testar
 
 function DOM_showAssuntoPorDia(){
-    assuntosPorDiaSemana = getAssuntosPorDiaSemana();
+    let assuntosPorDiaSemana = getAssuntosPorDiaSemana();
     
-    document.getElementById('segunda_assunto').innerText = `Segunda-feira: ${assuntosPorDiaSemana[1]}`;
-    document.getElementById('terca_assunto').innerText = `Terça-feira: ${assuntosPorDiaSemana[2]}`;
-    document.getElementById('quarta_assunto').innerText = `Quarta-feira: ${assuntosPorDiaSemana[3]}`;
-    document.getElementById('quinta_assunto').innerText = `Quinta-feira: ${assuntosPorDiaSemana[4]}`;
-    document.getElementById('sexta_assunto').innerText = `Sexta-feira: ${assuntosPorDiaSemana[5]}`;
-    document.getElementById('sabado_assunto').innerText = `Sábado: ${assuntosPorDiaSemana[6]}`;
-    document.getElementById('domingo_assunto').innerText = `Domingo: ${assuntosPorDiaSemana[7]}`;
+    assuntoList = document.getElementById("assuntoList");
+
+    let contador = 1;
+    assuntosPorDiaSemana.forEach(assunto => {
+        const span = document.createElement('span');
+        span.innerHTML = `${contador}º assunto: ${assunto.assunto} (até ${diaNumberToDiaText(assunto.ultimo_dia)}) </br>`;
+        assuntoList.appendChild(span);
+        contador++;
+    });
+
+    document.getElementById('assunto_a_estudar').innerText = `Assunto a estudar: ${assuntosPorDiaSemana[0].assunto}`;
 }//testar
 
 function formatarTempo(segundos) {
@@ -438,7 +411,7 @@ function getTempoEtapas(horasHoje){
     let totalSegundos = 60 * 60 * horasHoje;
     let etapas = [
         {
-            "descricao": "Revisão",
+            "descricao": "Revisão do dia anterior",
             "duracao": totalSegundos * 0.2
         },
         {
@@ -446,127 +419,130 @@ function getTempoEtapas(horasHoje){
             "duracao": totalSegundos * 0.3
         },
         {
-            "descricao": "Questões",
+            "descricao": "Resoluções de questões",
             "duracao": totalSegundos * 0.3
         },
         {
-            "descricao": "Anotações",
+            "descricao": "Criar flashcards Anki",
             "duracao": totalSegundos * 0.2
         }
     ]
     return etapas;
 }
 
-    if(horasDiarias.findIndex(item => item.dia === hoje) === -1){
-        totalSegundos = false;
-    }
+if(horasDiarias.findIndex(item => item.dia === hoje) === -1){
+    totalSegundos = false;
+}
 
-    function cronometroPorEtapa(etapa, horasHoje){
+function cronometroPorEtapa(etapa, horasHoje){
 
-        let horasUtilizadas = null;
+let horasUtilizadas = null;
 
-        horasUtilizadas = !horasHoje ? horasAEstudarHoje : horasHoje;
+horasUtilizadas = !horasHoje ? horasAEstudarHoje : horasHoje;
 
-        let segundosEtapa = 0;
+let segundosEtapa = 0;
+
+switch(etapa) {
+    case 1:
+        segundosEtapa = getTempoEtapas(horasUtilizadas)[0].duracao;
+        break;
+    case 2:
+        segundosEtapa = getTempoEtapas(horasUtilizadas)[1].duracao;
+        break;
+    case 3:
+        segundosEtapa = getTempoEtapas(horasUtilizadas)[2].duracao;
+        break;
+    case 4:
+        segundosEtapa = getTempoEtapas(horasUtilizadas)[3].duracao;
+        break;
+    default:
+        segundosEtapa = 0;
+        break;
+}
+
+segundosEtapa--;
+
+let progresso = document.getElementById("progresso");
+let cronometro = setInterval(() => {
+    document.getElementById(`etapa-${etapa}-counter`).textContent = `${formatarTempo(segundosEtapa)}`;
+    document.title = `Revisão: ${formatarTempo(segundosEtapa)}`
+    if (segundosEtapa === 0) {
+        clearInterval(cronometro)
+        
+        if(etapa < 4){
+            document.getElementById(`etapa-${etapa}-counter`).style.display = `none`;
+            document.getElementById(`etapa-${etapa + 1}-counter`).style.display = `block`;
+            
+            document.getElementById(`etapa-${etapa}-description`).style.display = `none`;
+            document.getElementById(`etapa-${etapa + 1}-description`).style.display = `block`;
+        } else {
+            document.getElementById(`etapa-${etapa}-description`).style.display = "none";
+            document.getElementById(`etapa-${etapa}-counter`).innerText = "Estudos finalizados."
+        }
+        
+        let status_image = progresso.querySelector(`#etapa-${etapa}-status`);
+        status_image.src = "img/check-circle.svg"
 
         switch(etapa) {
             case 1:
-                segundosEtapa = getTempoEtapas(horasUtilizadas)[0].duracao;
+                cronometroPorEtapa(2, horasHoje);
                 break;
             case 2:
-                segundosEtapa = getTempoEtapas(horasUtilizadas)[1].duracao;
+                cronometroPorEtapa(3, horasHoje);
                 break;
             case 3:
-                segundosEtapa = getTempoEtapas(horasUtilizadas)[2].duracao;
-                break;
-            case 4:
-                segundosEtapa = getTempoEtapas(horasUtilizadas)[3].duracao;
-                break;
-            default:
-                segundosEtapa = 0;
+                cronometroPorEtapa(4, horasHoje);
                 break;
         }
-
+    } else {
         segundosEtapa--;
-
-        let cronometro = setInterval(() => {
-            document.getElementById(`etapa-${etapa}-counter`).textContent = `${formatarTempo(segundosEtapa)}`;
-            document.title = `Revisão: ${formatarTempo(segundosEtapa)}`
-
-            if (segundosEtapa === 0) {
-                clearInterval(cronometro)
-
-                if(etapa < 4){
-                    document.getElementById(`etapa-${etapa}-counter`).style.display = `none`;
-                    document.getElementById(`etapa-${etapa + 1}-counter`).style.display = `block`;
-        
-                    document.getElementById(`etapa-${etapa}-description`).style.display = `none`;
-                    document.getElementById(`etapa-${etapa + 1}-description`).style.display = `block`;
-                } else {
-                    document.getElementById(`etapa-${etapa}-description`).style.display = "none";
-                    document.getElementById(`etapa-${etapa}-counter`).innerText = "Estudos finalizados."
-                }
-
-                switch(etapa) {
-                    case 1:
-                        cronometroPorEtapa(2, horasHoje);
-                        break;
-                    case 2:
-                        cronometroPorEtapa(3, horasHoje);
-                        break;
-                    case 3:
-                        cronometroPorEtapa(4, horasHoje);
-                        break;
-                }
-            } else {
-                segundosEtapa--;
-            }
-
-        }, 1000)
     }
-    
-    
-    let eventoAdicionado = false;
 
-    document.addEventListener('focusout', function(event) {
-        if (event.target.tagName === 'INPUT') {
-            DOM_exibicaoInformacaoIniciais(horasDiarias[convertDiaTextToDiaNumber(hoje)].tempo, true)//problema está aqui
+}, 1000)
+}
+
+    function DOM_exibicaoInformacaoIniciais(){
+        let totalSegundos = 10;
+
+        document.getElementById('totalHorasHoje').innerText = `Estudo por ${convertHorasParaHorasEMinutos(horasAEstudarHoje)}`;
+        document.title = `Revisão: ${formatarTempo(getTempoEtapas(horasAEstudarHoje)[0].duracao)}`
+        document.getElementById("etapa-1-counter").innerText = `${formatarTempo(getTempoEtapas(horasAEstudarHoje)[0].duracao)}`
+        document.getElementById("etapa-2-counter").innerText = `${formatarTempo(getTempoEtapas(horasAEstudarHoje)[1].duracao)}`
+        document.getElementById("etapa-3-counter").innerText = `${formatarTempo(getTempoEtapas(horasAEstudarHoje)[2].duracao)}`
+        document.getElementById("etapa-4-counter").innerText = `${formatarTempo(getTempoEtapas(horasAEstudarHoje)[3].duracao)}`
+    
+        let etapas = getTempoEtapas(null);
+        let etapa_counter = 1;
+
+        let progresso = document.getElementById("progresso");
+        if(progresso.childElementCount == 0){
+            etapas.forEach(etapa => {
+                document.getElementById(`etapa-${etapa_counter}-description`).innerText = `Etapa ${etapa_counter} - ${etapa.descricao}`
+    
+                const span = document.createElement('span');
+                span.innerHTML = `<img src="img/circle.svg" id="etapa-${etapa_counter}-status" alt="check-list"> ${etapa.descricao} </br>`;
+                progresso.appendChild(span);
+    
+                etapa_counter++;
+            });
         }
-    });
 
-    DOM_exibicaoInformacaoIniciais(horasAEstudarHoje);
-
-    function DOM_exibicaoInformacaoIniciais(horasHoje, permiteCronometro){
-        totalSegundos = 10;
-        document.getElementById('totalHorasHoje').innerText = `Estudo por ${convertHorasParaHorasEMinutos(horasHoje)}`;
-        document.title = `Revisão: ${formatarTempo(getTempoEtapas(horasHoje)[0].duracao)}`
-        document.getElementById("etapa-1-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[0].duracao)}`
-        document.getElementById("etapa-2-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[1].duracao)}`
-        document.getElementById("etapa-3-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[2].duracao)}`
-        document.getElementById("etapa-4-counter").innerText = `${formatarTempo(getTempoEtapas(horasHoje)[3].duracao)}`
-    
-        document.getElementById("etapa-1-description").innerText = `Etapa 1 - Revisão do dia anterior`
-        document.getElementById("etapa-2-description").innerText = `Etapa 2 - Teoria`
-        document.getElementById("etapa-3-description").innerText = `Etapa 3 - Resoluções de questões`
-        document.getElementById("etapa-4-description").innerText = `Etapa 4 - Criar flashcards Anki`
-        listMateriasEAssuntos()
-        ordenarAssuntosPorPrioridade()
+        DOM_listMateriasEAssuntos()
         DOM_showAssuntoPorDia();
     
         //TESTAR ISSO
-        if (!eventoAdicionado && permiteCronometro) {
-            document.getElementById('btn-comecar').addEventListener('click', function() {
-                if (totalSegundos !== false) {
-                    cronometroPorEtapa(1, horasHoje)
-                    
-                    this.disabled = true;
-                    this.innerText = "Pausar"
-                } else {
-                    document.getElementById('tempo-restante').textContent = `Hoje não há estudos!`;
-                }
-            });
-            eventoAdicionado = true;
-        }
+        document.getElementById('btn-comecar').addEventListener('click', function() {
+            if (totalSegundos !== false) {
+                cronometroPorEtapa(1, horasAEstudarHoje)
+                
+                this.disabled = true;
+                this.innerText = "Pausar"
+            } else {
+                document.getElementById('tempo-restante').textContent = `Hoje não há estudos!`;
+            }
+        });
     }
 
-module.exports = { getHorasEstudosPorDia, convertHorasParaHorasEMinutos };
+    DOM_exibicaoInformacaoIniciais();
+
+module.exports = { getHorasEstudosPorDia, convertHorasParaHorasEMinutos, addHorasDiariasToArray, getHorasEstudosTotais, ordenarAssuntosPorPrioridade };
