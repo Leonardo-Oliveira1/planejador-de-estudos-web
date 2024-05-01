@@ -1,7 +1,6 @@
 ### Funcionalidades do software
 
 - [x] Divisão de etapas de horários de estudos em relação ao total
-- [ ] Definição de horários diários (na própria interface)
 - [ ] Cronograma para cada etapa de estudo (com pausa e avanço de etapa)
 - [ ] Criação de matérias e assuntos (juntamente com prioridade e tempo estimado)
 - [x] Planejamento de contéudo semanal automático em relação a prioridade e tempo estimado dos assuntos
@@ -14,7 +13,7 @@
 
 
 ### Funcionalidades futuras para o software
-
+- [ ] Definição de horários diários (na própria interface)
 - [ ] Criar planejamentos com base em dias restantes para provas
 - [ ] Scrapping de dados de assuntos para estudar em PDFs com retorno em JSON.
 - [ ] Links vinculados a cada assunto para estudar posteriormente (IA)
