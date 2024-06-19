@@ -1,34 +1,3 @@
-let horasDiarias = [
-    {
-        dia: 'domingo',
-        tempo: 0
-    },
-    {
-        dia: 'segunda',
-        tempo: 0
-    },
-    {
-        dia: 'terca',
-        tempo: 0
-    },
-    {
-        dia: 'quarta',
-        tempo: 0
-    },
-    {
-        dia: 'quinta',
-        tempo: 0
-    },
-    {
-        dia: 'sexta',
-        tempo: 0
-    },
-    {
-        dia: 'sabado',
-        tempo: 0
-    },
-];
-
 const weekday = ["domingo", "segunda","terca","quarta","quinta","sexta","sabado"];
 const d = new Date();
 let hoje = weekday[d.getDay()];
@@ -37,22 +6,17 @@ function getHorasEstudosPorDia(dia){
     let horaInicioValue = document.getElementById(`${dia}-inicio`).value;
     let horaFimValue = document.getElementById(`${dia}-fim`).value;
     
-    var horaInicialDate = new Date(`2024-04-12T${horaInicioValue}:00`);
-    var horaFinalDate = new Date(`2024-04-12T${horaFimValue}:00`);
+    var horaInicialDate = new Date(`2024-01-01T${horaInicioValue}`);
+    var horaFinalDate = new Date(`2024-01-01T${horaFimValue}`);
 
     var diferencaEmMilissegundos = horaFinalDate - horaInicialDate;
     var tempoEmHoras = diferencaEmMilissegundos / (1000 * 60 * 60)
 
-    horasDiarias = addHorasDiariasToArray(dia, tempoEmHoras);
-
-    return convertHorasParaHorasEMinutos(tempoEmHoras);
+    return tempoEmHoras;
 }
 
-function addHorasDiariasToArray(dia, tempoEmHoras){
-    let i = horasDiarias.findIndex(item => item.dia === dia);
-    horasDiarias[i].tempo = tempoEmHoras;
-    
-    return horasDiarias; 
+function setHorasEstudosPorDia(dia){
+    document.getElementById(`${dia}-horas-estudadas`).innerText = convertHorasParaHorasEMinutos(getHorasEstudosPorDia(dia));
 }
 
 function convertHorasParaHorasEMinutos(horas) {
@@ -70,57 +34,17 @@ function convertHorasParaHorasEMinutos(horas) {
     }
 }
 
-function getHorasEstudosTotais(){
+function DOM_exibicaoDeHorasIniciais(schedule) {
     var result = 0;
+    console.log(schedule)
 
-    horasDiarias.forEach(e => {
-        result += e.tempo;
+    schedule.forEach(day => {
+        result += getHorasEstudosPorDia(day);
     });
 
-    return result;
-}
 
-function DOM_showHorasEstudadas(dia){
-    if(document.getElementById(`${dia}-habilitado`).checked){
-        document.getElementById(`${dia}-horas-estudadas`).innerText = getHorasEstudosPorDia(dia);
-    }
+    document.getElementById(`horasPorSemana`).innerText = `Horas semanais de estudos: ${convertHorasParaHorasEMinutos()}`;
 }// não precisa testar por ser DOM
-
-function DOM_exibicaoDeHorasIniciais() {
-    DOM_showHorasEstudadas("segunda")
-    DOM_showHorasEstudadas("terca")
-    DOM_showHorasEstudadas("quarta")
-    DOM_showHorasEstudadas("quinta")
-    DOM_showHorasEstudadas("sexta")
-    DOM_showHorasEstudadas("sabado")
-    DOM_showHorasEstudadas("domingo")
-    
-    document.getElementById(`horasPorSemana`).innerText = `Horas semanais de estudos: ${convertHorasParaHorasEMinutos(getHorasEstudosTotais())}`;
-}// não precisa testar por ser DOM
-
-
-document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        let dia = (this.id).split("-")[0];
-        let inicio_html = document.getElementById(`${dia}-inicio`);
-        let fim_html = document.getElementById(`${dia}-fim`);
-        let horas_estudadas = document.getElementById(`${dia}-horas-estudadas`);
-        
-        if(!this.checked){
-            inicio_html.disabled = true;
-            fim_html.disabled = true;
-        
-            horas_estudadas.innerText = "--";
-        
-        } else {
-            inicio_html.disabled = false;
-            fim_html.disabled = false;
-        }
-        DOM_exibicaoDeHorasIniciais()
-    });
-});
-
-DOM_exibicaoDeHorasIniciais()
 
 let horasAEstudarHoje = horasDiarias.find(arr => arr.dia === hoje);
 horasAEstudarHoje = (horasAEstudarHoje == undefined) ? 0 : horasAEstudarHoje.tempo;
@@ -285,7 +209,7 @@ function getDiasSemEstudo(){
 }//TESTAR
 
 function diaNumberToDiaText(number){
-    const day = ["domingo", "segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+    const day = ["domingo", "segunda","terca","quarta","quinta","sexta","sabado"];
 
     return day[number];
 }

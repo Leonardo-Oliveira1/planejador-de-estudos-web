@@ -93,53 +93,46 @@
         </div>
 
         <div id="horarios" style="display: none;">
-            <input type="checkbox" id="segunda-habilitado" checked>
             <label>Segunda-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-inicio" value="21:29" disabled
+            <input type="time" id="segunda-inicio" value="00:00" disabled
                 required />
-            <input type="time" onchange="DOM_showHorasEstudadas('segunda')" id="segunda-fim" value="21:30" required disabled/>
+            <input type="time" id="segunda-fim" value="00:00" required disabled/>
             <span id="segunda-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="terca-habilitado" checked>
             <label>Terça-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-inicio" value="20:30" required disabled/>
-            <input type="time" onchange="DOM_showHorasEstudadas('terca')" id="terca-fim" value="21:30" required disabled/>
+            <input type="time" id="terca-inicio" value="00:00" required disabled/>
+            <input type="time" id="terca-fim" value="00:00" required disabled/>
             <span id="terca-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="quarta-habilitado" checked>
             <label>Quarta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-inicio" value="20:30" required disabled/>
-            <input type="time" onchange="DOM_showHorasEstudadas('quarta')" id="quarta-fim" value="21:30" required disabled/>
+            <input type="time" id="quarta-inicio" value="00:00" required disabled/>
+            <input type="time" id="quarta-fim" value="00:00" required disabled/>
             <span id="quarta-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="quinta-habilitado">
             <label>Quinta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-inicio" value="20:30" required disabled/>
-            <input type="time" onchange="DOM_showHorasEstudadas('quinta')" id="quinta-fim" value="21:30" required disabled/>
+            <input type="time" id="quinta-inicio" value="00:00" required disabled/>
+            <input type="time" id="quinta-fim" value="00:00" required disabled/>
             <span id="quinta-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="sexta-habilitado">
             <label>Sexta-feira:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-inicio" value="20:30" required disabled/>
-            <input type="time" onchange="DOM_showHorasEstudadas('sexta')" id="sexta-fim" value="21:30" required disabled/>
+            <input type="time" id="sexta-inicio" value="00:00" required disabled/>
+            <input type="time" id="sexta-fim" value="00:00" required disabled/>
             <span id="sexta-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="sabado-habilitado" checked>
             <label>Sábado:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-inicio" value="08:30" required disabled/>
-            <input type="time" onchange="DOM_showHorasEstudadas('sabado')" id="sabado-fim" value="11:30" required disabled/>
+            <input type="time" id="sabado-inicio" value="00:00" required disabled/>
+            <input type="time" id="sabado-fim" value="00:00" required disabled/>
             <span id="sabado-horas-estudadas">--</span><br>
 
-            <input type="checkbox" id="domingo-habilitado" checked>
             <label>Domingo:</label>
-            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-inicio" value="20:30"
+            <input type="time" id="domingo-inicio" value="00:00"
                 required disabled/>
-            <input type="time" onchange="DOM_showHorasEstudadas('domingo')" id="domingo-fim" value="22:00" required disabled/>
+            <input type="time" id="domingo-fim" value="00:00" required disabled/>
             <span id="domingo-horas-estudadas">--</span><br>
 
             <br>
 
-            <span id="horasPorSemana">Horas semanais de estudos: ...</span>
+            <span id="horasPorSemana">--</span>
         </div>
 
         <div id="conteudos" style="display: none;">
@@ -183,6 +176,70 @@
     </div>
 
 </body>
+
+<script>
+    const host = 'http://127.0.0.1:8000/api';
+
+    login("a", "b");
+    // login(prompt("Digite seu usuario"), prompt("Digite sua senha"));
+    async function login(email, password) {
+
+        email = 'efunk@example.net';
+        password = '123';
+
+        const response = await fetch(`${host}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const token = data.access_token;
+            localStorage.setItem('jwt', token);
+
+        } 
+}
+
+    async function getSchedule() {
+        const token = localStorage.getItem('jwt');
+
+        const response = await fetch(`${host}/schedule/list`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+                var totalHours = 0;
+
+                data['result'].forEach(day => {
+                    let day_text = diaNumberToDiaText(day['day']);
+    
+                    document.getElementById(`${day_text}-inicio`).value = day['start'];
+                    document.getElementById(`${day_text}-fim`).value = day['end'];
+                    setHorasEstudosPorDia(day_text);
+    
+                    totalHours += getHorasEstudosPorDia(day_text);
+                });
+                
+                document.getElementById(`horasPorSemana`).innerText = `Horas semanais de estudos: ${convertHorasParaHorasEMinutos(totalHours)}`;
+
+
+
+        } else {
+            console.error('Erro ao buscar dados dos horários.');
+        }
+    }
+
+    getSchedule()
+
+</script>
 
 <script src="app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
