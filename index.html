@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
@@ -65,7 +65,7 @@
                 <a class="nav-link" onclick="DOM_showElement('conteudos', this)">Conteúdos</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" onclick="DOM_showElement('conteudo_semana', this)" aria-disabled="true">Próximos assuntos</a>
+                <a class="nav-link" onclick="DOM_showElement('conteudo_semana', this)" aria-disabled="true">Calendário</a>
             </li>
         </ul>
 
@@ -141,7 +141,7 @@
         </div>
 
         <div id="conteudo_semana" style="display: none;">
-            <h1>Próximos assuntos da semana</h1>
+            <h2>Calendário</h2>
             <h2 id="assuntoList"></h2>
         </div>
 
@@ -237,6 +237,73 @@
         }
     }
 
+    async function getModulesAndSubjects() {
+        const token = localStorage.getItem('jwt');
+
+        const response = await fetch(`${host}/module/list`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+
+                var totalHours = 0;
+
+                var listaMaterias = document.getElementById('lista-materias');
+
+                const response_subjects = await fetch(`${host}/subject/list`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                if(response_subjects.ok){
+                    
+                    const data_subjects = await response_subjects.json();
+                    data['result'].forEach(materia => {
+                        let li = document.createElement('li');
+                        li.textContent = materia.name;
+                    
+                        console.log(data_subjects['result'])
+                        if (data_subjects['result'] && data_subjects['result'].length > 0) {
+                            let ulAssuntos = document.createElement('ul');
+                            data_subjects['result'].forEach(function(assunto) {
+                                if(assunto.module == materia.id){
+                                    let liAssunto = document.createElement('li');
+                                    liAssunto.textContent = `${assunto.name} (${assunto.estimated_hours} horas) [Prioridade: ${getPrioridadeText(assunto.priority)}]`;
+                                    
+                                    if(assunto.isFinished == true){
+                                        liAssunto.style.textDecoration = "line-through";
+                                    }
+                        
+                                    ulAssuntos.appendChild(liAssunto);
+                                }
+                            });
+                            li.appendChild(ulAssuntos);
+                        }
+                    
+                        listaMaterias.appendChild(li);
+                    });
+                } else {
+                    console.error('Erro ao buscar dados dos assuntos.');
+                }
+        } else {
+            console.error('Erro ao buscar dados das matérias.');
+        }
+    }
+
+    function getPrioridadeText(num){
+        let prioridades = ['muito baixa', 'baixa', 'normal', 'média', 'alta', 'crítica']
+
+        return prioridades[num];
+    }
+
+    getModulesAndSubjects()
     getSchedule()
 
 </script>
